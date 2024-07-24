@@ -3,7 +3,7 @@ import styles from '../styles/Modal.module.css'
 import x from '../assets/X.png'
 import info_circle from '../assets/info-circle.png'
 import { login, signUp, } from '../api/serverApi';
-import greenCheckbox from '../assets/tick-circle.png' // ro dalogindeba an daregistrirdeba green checkbox gamoachine ar dagaviwydes
+import greenCheckbox from '../assets/tick-circle.png' 
 import { useNavigate } from 'react-router-dom';
 const Modal = ({ value, setOpen }) => {
   const [username, setUsername] = useState('');
@@ -12,8 +12,8 @@ const Modal = ({ value, setOpen }) => {
   const [error, setError] = useState('');
   const [logedIn, setLogedIn] = useState(null);
   const [SignUp, setSignUpSts] = useState(true);
+  const [ShowSuccess, setShowSuccess] = useState(false)
   
-  console.log(logedIn)
   const navigate = useNavigate()
   const closeModal = () => {
     if(value === 'addBlog'){
@@ -25,6 +25,15 @@ const Modal = ({ value, setOpen }) => {
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
+
+  
+
+  const handlePlatformChange = ()=> {
+      setSignUpSts(last => !last)
+      setEmail('')
+      setPassword('')
+      setUsername('')
+    }
 
   const onLogin = async(e) => {
     e.preventDefault();
@@ -49,16 +58,16 @@ const Modal = ({ value, setOpen }) => {
     try {
       const data = await signUp(email, password, username);
       setLogedIn(data);
+      setShowSuccess(true)
+       setTimeout(() => {
+         setShowSuccess(false)
+        handlePlatformChange()
+       }, 2000);
     } catch (error) {
       setError('ელ–ფოსტა არ მოიძებნა');
     }
   }
-   const handlePlatformChange = ()=> {
-    setSignUpSts(last => !last)
-    setEmail('')
-    setPassword('')
-    setUsername('')
-   }
+  
 
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
@@ -74,6 +83,18 @@ const Modal = ({ value, setOpen }) => {
   };
   
   return (
+    ShowSuccess ? 
+    <div className={styles.modalBackground} onClick={closeModal}>
+      <div className={styles.modalContent} onClick={stopPropagation}>
+        <div className={styles.greenCheck}>
+          <div className={styles.greenCheckImg}>
+            <img src={greenCheckbox} alt="!" />
+          </div>
+          <p className={styles.error}> რეგისტრაცია წარმატებულია</p>
+        </div>
+      </div>
+    </div>
+      :
     <div className={styles.modalBackground} onClick={closeModal}>
       <div className={styles.modalContent} onClick={stopPropagation}>
         <img src={x} alt="x" className={styles.x} onClick={closeModal} />
